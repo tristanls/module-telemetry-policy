@@ -2,6 +2,19 @@
 
 const Rx = require("rxjs/Rx");
 
+const countdown = (done, count) =>
+{
+    let doneCount = 0;
+    return () =>
+    {
+        doneCount++;
+        if (doneCount == count)
+        {
+            done();
+        }
+    }
+};
+
 const observable =
 {
     fromTelemetry: module => Rx.Observable.create(observer =>
@@ -25,37 +38,48 @@ module.exports = config =>
     it("configures self as telemetry emitter", done =>
         {
             const module = config.construct();
+            const finish = countdown(done, 2);
             observable.fromTelemetry(module)
                 .filter(event => event.msg)
                 .subscribe(
-                    event => expect(event.msg).toBe("hi o/"),
+                    event =>
+                    {
+                        expect(event.msg).toBe("hi o/");
+                        finish()
+                    },
                     error => expect(error).toBe(false),
-                    done
+                    finish
                 );
             module.emit("telemetry", { msg: "hi o/" });
-            module.emit("end");
+            setImmediate(() => module.emit("end"));
         }
     );
 
     it("configures telemetry logging", done =>
         {
             const module = config.construct();
+            const finish = countdown(done, 2);
             observable.fromTelemetry(module)
                 .filter(event => event.type == "log")
                 .filter(event => event.level == "info")
                 .subscribe(
-                    event => expect(event.message).toBe("hi o/"),
+                    event =>
+                    {
+                        expect(event.message).toBe("hi o/");
+                        finish()
+                    },
                     error => expect(error).toBe(false),
-                    done
+                    finish
                 );
             module._log("info", "hi o/");
-            module.emit("end");
+            setImmediate(() => module.emit("end"));
         }
     );
 
     it("configures telemetry metrics", done =>
         {
             const module = config.construct();
+            const finish = countdown(done, 2);
             observable.fromTelemetry(module)
                 .filter(event => event.type == "metric")
                 .subscribe(
@@ -65,9 +89,10 @@ module.exports = config =>
                         expect(event.target_type).toBe("gauge");
                         expect(event.unit).toBe("ms");
                         expect(event.value).toBe(100);
+                        finish();
                     },
                     error => expect(error).toBe(false),
-                    done
+                    finish
                 );
             module._metrics.gauge("latency",
                 {
@@ -75,13 +100,14 @@ module.exports = config =>
                     value: 100
                 }
             );
-            module.emit("end");
+            setImmediate(() => module.emit("end"));
         }
     );
 
     it("configures telemetry tracing", done =>
         {
             const module = config.construct();
+            const finish = countdown(done, 2);
             const parentSpan = module._tracing.trace("test", undefined,
                 {
                     my: "baggage"
@@ -99,12 +125,13 @@ module.exports = config =>
                                 my: "baggage"
                             }
                         );
+                        finish();
                     },
                     error => expect(error).toBe(false),
-                    done
+                    finish
                 );
             parentSpan.finish();
-            module.emit("end");
+            setImmediate(() => module.emit("end"));
         }
     );
 };
