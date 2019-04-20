@@ -17,7 +17,7 @@
     "telemetry-events-trace": "0.2.0"
   },
   "dependencies": {
-    "jest": "24.1.0",
+    "jest": "24.7.1",
     "rxjs": "6.4.0"
   },
   "repository": {
