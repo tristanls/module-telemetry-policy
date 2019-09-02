@@ -1,6 +1,6 @@
 {
   "name": "module-telemetry-policy",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Jest tests enforcing module telemetry policy",
   "scripts": {
     "assert-latest-node": "(node -v | grep -q ${npm_package_scriptvars_latest_node}) || (echo \"Expected node version ${npm_package_scriptvars_latest_node}, got $(node -v)\" && exit 1)",
