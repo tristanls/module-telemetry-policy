@@ -7,7 +7,7 @@
     "readme": "jest"
   },
   "scriptvars": {
-    "latest_node": "v12.9.1"
+    "latest_node": "v13.3.0"
   },
   "main": "index.js",
   "devDependencies": {
@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "jest": "24.9.0",
-    "rxjs": "6.5.2"
+    "rxjs": "6.5.3"
   },
   "repository": {
     "type": "git",
